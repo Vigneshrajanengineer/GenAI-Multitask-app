@@ -71,7 +71,7 @@ if st.button("🚀 Run Task"):
             elif task == "Text Translation":
                 result = client.text_generation(
                     f"Translate to {target_lang}: {input_text}",
-                    model="zai-org/GLM-5.1",
+                    model="tencent/HY-MT1.5-1.8B",
                     max_new_tokens=200
                 )
                 output = result
