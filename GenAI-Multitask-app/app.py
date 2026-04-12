@@ -35,13 +35,8 @@ if st.button("Run Task"):
             prompt = f"Analyze the sentiment of this text. Reply with Positive, Negative, or Neutral:\n\n{input_text}"
         
         try:
-            response = requests.post(
-                "http://localhost:11434/api/generate",
-                json={
-                    "model": model,
-                    "prompt": prompt
-                }
-            )
+            response = requests.post( f"https://api-inference.huggingface.co/models/{model}", headers={"Authorization": f"Bearer {st.secrets['HF_TOKEN']}"},
+    json={"inputs": prompt})
             result = response.json()['response']
             st.success(result)
         except Exception as e:
