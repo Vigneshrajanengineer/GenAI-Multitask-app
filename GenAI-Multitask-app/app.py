@@ -79,7 +79,7 @@ if st.button("🚀 Run Task"):
             elif task == "Text Writing":
                 result = client.text_generation(
                     f"Write a detailed article about: {input_text}",
-                    model="gpt2",
+                    model="meta-llama/Llama-3.3-70B-Instruct",
                     max_new_tokens=300
                 )
                 output = result
