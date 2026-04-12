@@ -79,7 +79,7 @@ if st.button("🚀 Run Task"):
             elif task == "Text Writing":
                 result = client.text_generation(
                     f"Write a detailed article about: {input_text}",
-                    model="google/flan-t5-base",
+                    model="zai-org/GLM-5.1",
                     max_new_tokens=300
                 )
                 output = result
