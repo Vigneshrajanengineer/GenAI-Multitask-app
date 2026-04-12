@@ -1,6 +1,9 @@
 import streamlit as st
 import requests
 
+# -------------------------------
+# Page Config
+# -------------------------------
 st.set_page_config(page_title="GenAI MultiTask App", page_icon="🤖")
 
 st.title("🤖 GenAI Multi-Task Application")
@@ -29,7 +32,7 @@ if task == "Text Translation":
     target_lang = st.text_input("Enter target language (e.g., French, Spanish):")
 
 # -------------------------------
-# Correct Model Mapping
+# Model Mapping (REAL MODELS)
 # -------------------------------
 MODEL_MAP = {
     "Text Summarization": "facebook/bart-large-cnn",
@@ -40,7 +43,7 @@ MODEL_MAP = {
 }
 
 # -------------------------------
-# API Call
+# API Call Function
 # -------------------------------
 def query(model, payload):
     url = f"https://api-inference.huggingface.co/models/{model}"
@@ -56,46 +59,62 @@ def query(model, payload):
 if st.button("🚀 Run Task"):
     if not input_text.strip():
         st.warning("⚠️ Please enter some text")
+
+    elif task == "Text Translation" and not target_lang.strip():
+        st.warning("⚠️ Please enter target language")
+
     else:
-        try:
-            model = MODEL_MAP[task]
+        with st.spinner("Processing... ⏳"):
+            try:
+                model = MODEL_MAP[task]
 
-            # Prompt / Payload
-            if task == "Text Summarization":
-                payload = {"inputs": input_text}
+                # -------------------------------
+                # Payload Creation
+                # -------------------------------
+                if task == "Text Summarization":
+                    payload = {"inputs": input_text}
 
-            elif task == "Text Translation":
-                payload = {"inputs": f"Translate to {target_lang}: {input_text}"}
+                elif task == "Text Translation":
+                    payload = {"inputs": f"Translate to {target_lang}: {input_text}"}
 
-            elif task == "Text Writing":
-                payload = {"inputs": f"Write about: {input_text}"}
+                elif task == "Text Writing":
+                    payload = {"inputs": f"Write a detailed content about: {input_text}"}
 
-            elif task == "NER (Entity Recognition)":
-                payload = {"inputs": input_text}
+                elif task == "NER (Entity Recognition)":
+                    payload = {"inputs": input_text}
 
-            elif task == "Sentiment Analysis":
-                payload = {"inputs": input_text}
+                elif task == "Sentiment Analysis":
+                    payload = {"inputs": input_text}
 
-            # Call API
-            output = query(model, payload)
+                # -------------------------------
+                # API Call
+                # -------------------------------
+                output = query(model, payload)
 
-            st.success("✅ Result")
+                # -------------------------------
+                # Handle Model Loading / Errors
+                # -------------------------------
+                if isinstance(output, dict) and "error" in output:
+                    st.warning("⚠️ Model is loading... Please try again in a few seconds.")
+                    st.stop()
 
-            # -------------------------------
-            # Correct Output Handling
-            # -------------------------------
-            if task == "Text Summarization":
-                st.write(output[0]["summary_text"])
+                st.success("✅ Result")
 
-            elif task in ["Text Translation", "Text Writing"]:
-                st.write(output[0]["generated_text"])
+                # -------------------------------
+                # Output Handling
+                # -------------------------------
+                if task == "Text Summarization":
+                    st.write(output[0]["summary_text"])
 
-            elif task == "NER (Entity Recognition)":
-                for ent in output:
-                    st.write(f"{ent['word']} → {ent['entity_group']}")
+                elif task in ["Text Translation", "Text Writing"]:
+                    st.write(output[0]["generated_text"])
 
-            elif task == "Sentiment Analysis":
-                st.write(f"Sentiment: {output[0]['label']}")
+                elif task == "NER (Entity Recognition)":
+                    for ent in output:
+                        st.write(f"{ent['word']} → {ent['entity_group']}")
 
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
+                elif task == "Sentiment Analysis":
+                    st.write(f"Sentiment: {output[0]['label']}")
+
+            except Exception as e:
+                st.error(f"❌ Error: {e}")
