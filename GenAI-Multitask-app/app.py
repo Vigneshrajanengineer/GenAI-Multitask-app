@@ -79,7 +79,7 @@ if st.button("🚀 Run Task"):
             elif task == "Text Writing":
                 result = client.text_generation(
                     f"Write a detailed article about: {input_text}",
-                    model="openai/gpt-oss-120b",
+                    model="mistralai/Mistral-7B-Instruct-v0.1",
                     max_new_tokens=300
                 )
                 output = result
